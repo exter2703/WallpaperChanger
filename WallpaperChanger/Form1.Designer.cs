@@ -9,6 +9,7 @@ partial class Form1
     private System.Windows.Forms.Button deleteWallPaperButton;
     private System.Windows.Forms.PictureBox wallpapersDisplay;
     private System.Windows.Forms.ListBox wallpapersListBox;
+    private System.Windows.Forms.Button darkModeButton;
     
     protected override void Dispose(bool disposing)
     {
@@ -29,6 +30,7 @@ partial class Form1
         this.deleteWallPaperButton = new System.Windows.Forms.Button();
         this.wallpapersDisplay = new System.Windows.Forms.PictureBox();
         this.wallpapersListBox = new System.Windows.Forms.ListBox();
+        this.darkModeButton = new System.Windows.Forms.Button();
         this.SuspendLayout();
         
         //wallpaperDisplay
@@ -36,13 +38,13 @@ partial class Form1
         this.wallpapersDisplay.Size = new System.Drawing.Size(1920/3, 1080/3);
         this.wallpapersDisplay.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
         this.wallpapersDisplay.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-        //this.wallpapersDisplay.Dock = System.Windows.Forms.DockStyle.Right;
+        this.wallpapersDisplay.Dock = System.Windows.Forms.DockStyle.Fill;
         this.wallpapersDisplay.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
         this.Controls.Add(this.wallpapersDisplay);
 
         //wallpaperListBox
         this.wallpapersListBox.Location = new System.Drawing.Point(60, 200);
-        this.wallpapersListBox.Size = new System.Drawing.Size(200, 225);
+        this.wallpapersListBox.Size = new System.Drawing.Size(200, 300);
         this.wallpapersListBox.SelectedIndexChanged += 
             new System.EventHandler(this.WallpapersListBoxSelectedIndexChanged);
         //this.wallpapersListBox.Dock = System.Windows.Forms.DockStyle.Right;
@@ -51,7 +53,8 @@ partial class Form1
         this.applyButton.Location = new System.Drawing.Point(60, 100);
         this.applyButton.Size = new System.Drawing.Size(200, 40);
         this.applyButton.Name = "applyButton";
-        this.applyButton.Text = "Apply";
+        this.applyButton.Text = "\ud83c\udfaf Apply";
+        this.applyButton.Font = new Font(FontFamily.GenericSansSerif, 12, FontStyle.Bold);
         this.applyButton.UseVisualStyleBackColor = true;
         this.applyButton.Click += new System.EventHandler(this.ApplyButtonClick);
         //this.applyButton.Dock = DockStyle.Top;
@@ -60,7 +63,8 @@ partial class Form1
         this.addWallPaperButton.Location = new System.Drawing.Point(60, 150);
         this.addWallPaperButton.Size = new System.Drawing.Size(100, 40);
         this.addWallPaperButton.Name = "addWallPaperButton";
-        this.addWallPaperButton.Text = "Upload Wallpaper";
+        this.addWallPaperButton.Text = "\ud83d\uddbc\ufe0f Upload Wallpaper";
+        this.addWallPaperButton.Font = new Font(FontFamily.GenericSansSerif, 12);
         this.addWallPaperButton.UseVisualStyleBackColor = true;
         this.addWallPaperButton.Click += new System.EventHandler(this.AddWallPaperButtonClick);
         //this.addWallPaperButton.Dock = DockStyle.Left;
@@ -69,10 +73,20 @@ partial class Form1
         this.deleteWallPaperButton.Location = new System.Drawing.Point(160, 150);
         this.deleteWallPaperButton.Size = new System.Drawing.Size(100, 40);
         this.deleteWallPaperButton.Name = "deleteWallPaperButton";
-        this.deleteWallPaperButton.Text = "Delete Wallpaper";
+        this.deleteWallPaperButton.Text = "\ud83d\uddd1\ufe0f Delete Wallpaper";
+        this.deleteWallPaperButton.Font = new Font(FontFamily.GenericSansSerif, 12);
         this.deleteWallPaperButton.UseVisualStyleBackColor = true;
         this.deleteWallPaperButton.Click += new System.EventHandler(this.DeleteWallPaperButtonClick);
         //this.deleteWallPaperButton.Dock = DockStyle.Left;
+        
+        //darkModeButton
+        this.darkModeButton.Location = new System.Drawing.Point(10, 10);
+        this.darkModeButton.Size = new System.Drawing.Size(35, 35);
+        this.darkModeButton.Name = "darkModeButton";
+        this.darkModeButton.Text = "\ud83c\udf19";
+        this.darkModeButton.Font = new Font(FontFamily.GenericSansSerif, 15F, FontStyle.Bold);
+        this.darkModeButton.UseVisualStyleBackColor = true;
+        this.darkModeButton.Click += new System.EventHandler(this.ChangeDarkMode);
 
         this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
         this.ClientSize = new System.Drawing.Size(1920/2, 1080/2);
@@ -87,6 +101,7 @@ partial class Form1
         this.Controls.Add(this.addWallPaperButton);
         this.Controls.Add(this.wallpapersListBox);
         this.Controls.Add(this.wallpapersDisplay);
+        this.Controls.Add(this.darkModeButton);
     }
     
     #endregion
