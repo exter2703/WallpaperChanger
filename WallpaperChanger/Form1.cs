@@ -1,3 +1,5 @@
+using Microsoft.VisualBasic.Devices;
+
 namespace WallpaperChanger;
 
 using System.IO;
@@ -8,42 +10,37 @@ using Microsoft.Win32;
 using System.Windows.Forms;
 public partial class Form1 : Form
 {
+    private readonly SettingsManager _settingsManager;
+    private ThemeManager _themeManager;
+    
     [DllImport("user32.dll", SetLastError = true)]
     private static extern bool SystemParametersInfo(
         int uAction, int uParam, string lpvParam, int fuWinIni);
 
-    private const int SPI_SETDESKWALLPAPER = 20;
-    private const int SPIF_UPDATEINIFILE = 0x01;
-    private const int SPIF_SENDCHANGE = 0x02;
+    private const int SpiSetdeskwallpaper = 20;
+    private const int SpifUpdateinifile = 0x01;
+    private const int SpifSendchange = 0x02;
     
-    private readonly string settingsPath = Path.Combine(Application.StartupPath, "settings.txt");
-    private string wallpaperPath;
     public Form1()
     {
         InitializeComponent();
-        WallpaperDisplay();
         CenterToScreen();
-        if (File.Exists(settingsPath))
-        {
-            string theme = File.ReadAllText(settingsPath).Trim();
-
-            if (theme == "Dark")
-            {
-                isDarkMode = false;
-                ChangeDarkMode(null, null);
-            }
-        }
+        
+        _settingsManager = new SettingsManager(Path.Combine(Application.StartupPath, "Wallpapers"));
+        _themeManager = new ThemeManager(_settingsManager, this);
+        _themeManager.ApplyTheme();
+        WallpaperDisplay();
     }
+    
 
     private void WallpaperDisplay()
     {
         if (wallpapersListBox == null) return;
-        
         wallpapersDisplay.Controls.Clear();
         wallpapersListBox.BeginUpdate();
         wallpapersListBox.Items.Clear();
 
-        string wallpapersPath = Path.Combine(Application.StartupPath, "Wallpapers");
+        string wallpapersPath = Path.Combine(_settingsManager.WallpapersPath);
 
         if (!Directory.Exists(wallpapersPath)){
             wallpapersListBox.EndUpdate();
@@ -62,20 +59,17 @@ public partial class Form1 : Form
 
     private void WallpapersListBoxSelectedIndexChanged(object sender, EventArgs e)
     {
-        if (wallpapersListBox.SelectedItem is string fileName)
+        if (wallpapersListBox.SelectedItem is string selectedWallpaper)
         {
-            string fullPath = Path.Combine(Application.StartupPath, "Wallpapers", fileName);
+            string fullPath = Path.Combine(_settingsManager.WallpapersPath, selectedWallpaper);
 
             if (File.Exists(fullPath))
             {
-                using (var img = Image.FromFile(fullPath))
-                {
-                    wallpapersDisplay.Image?.Dispose();
-                    wallpapersDisplay.Image = new Bitmap(img);
-                }
+                using var img = Image.FromFile(fullPath);
+                wallpapersDisplay.Image?.Dispose();
+                wallpapersDisplay.Image = new Bitmap(img);
             }
         }
-
     }
     private void ApplyButtonClick(object sender, EventArgs e)
     {
@@ -85,7 +79,7 @@ public partial class Form1 : Form
             return;
         }
          
-        string fullPath = Path.Combine(Application.StartupPath, "Wallpapers", selectedWallpaper);
+        string fullPath = Path.Combine(_settingsManager.WallpapersPath, selectedWallpaper);
 
         if (!File.Exists(fullPath))
         {
@@ -94,58 +88,46 @@ public partial class Form1 : Form
         }
 
         bool result = SystemParametersInfo(
-            SPI_SETDESKWALLPAPER,
+            SpiSetdeskwallpaper,
             0,
             fullPath,
-            SPIF_UPDATEINIFILE | SPIF_SENDCHANGE);
+            SpifUpdateinifile | SpifSendchange);
 
-        if (result)
-        {
-            MessageBox.Show("Wallpaper changed.");
-        }
-        else
-        {
-            MessageBox.Show("Wallpaper could not be updated.");
-        }
+        MessageBox.Show(result ? "Wallpaper changed." : "Wallpaper could not be updated.");
     }
 
     private void AddWallPaperButtonClick(object sender, EventArgs e)
     {
-        using (OpenFileDialog fileExplorer = new OpenFileDialog())
+        using OpenFileDialog fileExplorer = new OpenFileDialog();
+        fileExplorer.Title = "Select Wallpaper(s) to upload";
+        fileExplorer.Filter = "Images (*.jpg;*.jpeg;*.png)|*.jpg;*.jpeg;*.png";
+        fileExplorer.Multiselect = true;
+
+        if (fileExplorer.ShowDialog() == DialogResult.OK)
         {
-            fileExplorer.Title = "Select Wallpaper(s) to upload";
-            fileExplorer.Filter = "Images (*.jpg;*.jpeg;*.png)|*.jpg;*.jpeg;*.png";
-            fileExplorer.Multiselect = true;
+            string fullPath = Path.Combine(_settingsManager.WallpapersPath);
 
-            if (fileExplorer.ShowDialog() == DialogResult.OK)
+            if (!Directory.Exists(fullPath))
             {
-                string wallpaperPath = Path.Combine(Application.StartupPath, "Wallpapers");
+                Directory.CreateDirectory(fullPath);
+            }
 
-                if (!Directory.Exists(wallpaperPath))
+            foreach (string selectedWallpaper in fileExplorer.FileNames)
+            {
+                string fileName = Path.GetFileName(selectedWallpaper);
+                string destinationPath = Path.Combine(fullPath, fileName);
+
+                if (!File.Exists(destinationPath))
                 {
-                    Directory.CreateDirectory(wallpaperPath);
+                    File.Copy(selectedWallpaper, destinationPath);
+                    WallpaperDisplay();
+                    MessageBox.Show("Wallpaper(s) added!");
                 }
-
-                foreach (string selectedWallpaper in fileExplorer.FileNames)
+                else
                 {
-                    string fileName = Path.GetFileName(selectedWallpaper);
-                    string destinationPath = Path.Combine(wallpaperPath, fileName);
-
-                    if (!File.Exists(destinationPath))
-                    {
-                        File.Copy(selectedWallpaper, destinationPath);
-                        WallpaperDisplay();
-                        MessageBox.Show("Wallpaper(s) added!");
-                    }
-                    else
-                    {
-                        MessageBox.Show("Wallpaper(s) already added!");
-                        WallpaperDisplay();
-                    }
+                    MessageBox.Show("Wallpaper(s) already added!");
+                    WallpaperDisplay();
                 }
-
-                
-                
             }
         }
     }
@@ -157,7 +139,7 @@ public partial class Form1 : Form
             MessageBox.Show("Please select a Wallpaper!");
             return;
         }
-        string fullPath = Path.Combine(Application.StartupPath, "Wallpapers", selectedWallpaper);
+        string fullPath = Path.Combine(_settingsManager.WallpapersPath, selectedWallpaper);
 
         if (File.Exists(fullPath))
         {
@@ -188,44 +170,19 @@ public partial class Form1 : Form
 
     }
 
-    private bool isDarkMode = false;
-    public void ChangeDarkMode(object? sender, EventArgs? e)
+    public void ChangeWallpaperFolderClick(object? sender, EventArgs? e)
     {
-        isDarkMode = !isDarkMode;
-        if (isDarkMode)
+        using (var folderDialog = new FolderBrowserDialog())
         {
-            BackColor = Color.FromArgb(30, 30, 30);
-            ForeColor = Color.White;
-            foreach (Control control in Controls)
-            {
-                control.BackColor = Color.FromArgb(100, 100, 100);
-                control.ForeColor = Color.White;
+            folderDialog.Description = "Select Wallpaper(s) folder";
 
-                if (control is Button button)
-                {
-                    button.FlatStyle = FlatStyle.Flat;
-                }
-                darkModeButton.Text = "\u2600\ufe0f";
+            if (folderDialog.ShowDialog() == DialogResult.OK)
+            {
+                _settingsManager.WallpapersPath = folderDialog.SelectedPath;
+                WallpaperDisplay();
+                MessageBox.Show("Wallpaper folder selected!");
             }
         }
-        else
-        {
-            BackColor = SystemColors.Control;
-            ForeColor = SystemColors.ControlText;
-
-            foreach (Control control in Controls)
-            {
-                control.BackColor = SystemColors.Control;
-                control.ForeColor = SystemColors.ControlText;
-
-                if (control is Button button)
-                {
-                    button.FlatStyle = FlatStyle.Flat;
-                }
-            }
-            darkModeButton.Text = "\ud83c\udf19";
-        }
-        darkModeButton.Text = isDarkMode ? "\u2600\ufe0f9" : "\ud83c\udf19";
-        File.WriteAllText(settingsPath, isDarkMode ? "Dark" : "Light");
+        _settingsManager.SaveSettings();
     }
 }
