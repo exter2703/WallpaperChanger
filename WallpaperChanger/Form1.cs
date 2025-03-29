@@ -25,23 +25,19 @@ public partial class Form1 : Form
 
         foreach (var file in imageFiles)
         {
-            PictureBox pictureBox = new PictureBox();
-            pictureBox.Image = Image.FromFile(file);
-            pictureBox.SizeMode = PictureBoxSizeMode.Zoom;
-            pictureBox.Width = 200;
-            pictureBox.Height = 200;
-            pictureBox.Margin = new Padding(5);
-            pictureBox.Cursor = Cursors.Hand;
-         
-            pictureBox.Tag = file;
+            wallpapersListBox.Items.Add(file);       
+        }
+    }
 
-            pictureBox.Click += (s, e) =>
+    private void WallpapersListBoxSelectedIndexChanged(object sender, EventArgs e)
+    {
+        if (wallpapersListBox.SelectedItem is string filePath && File.Exists(filePath))
+        {
+            using (var img = Image.FromFile(filePath))
             {
-                MessageBox.Show("Clicked wallpaper: " + file);
-                WallpaperDisplay();
-            };
-            
-            wallpapersDisplay.Controls.Add(pictureBox);
+                wallpapersDisplay.Image?.Dispose();
+                wallpapersDisplay.Image = new Bitmap(img);
+            }
         }
     }
     private void ApplyButtonClick(object sender, EventArgs e)
@@ -55,6 +51,7 @@ public partial class Form1 : Form
         {
             fileExplorer.Title = "Select Wallpaper(s) to upload";
             fileExplorer.Filter = "Images (*.jpg;*.jpeg;*.png)|*.jpg;*.jpeg;*.png";
+            fileExplorer.Multiselect = true;
 
             if (fileExplorer.ShowDialog() == DialogResult.OK)
             {
@@ -68,10 +65,11 @@ public partial class Form1 : Form
                 string fileName = Path.GetFileName(selectedWallpaper);
                 string wallpaperDestination = Path.Combine(wallpaperPath, fileName);
 
-                if (!File.Exists(selectedWallpaper))
+                if (File.Exists(selectedWallpaper))
                 {
                     File.Copy(selectedWallpaper, wallpaperDestination);
                     MessageBox.Show("Wallpaper added!");
+                    wallpapersDisplay.Refresh();
                 }
                 else
                 {
@@ -84,6 +82,9 @@ public partial class Form1 : Form
 
     private void DeleteWallPaperButtonClick(object sender, EventArgs e)
     {
-        
+        string path = Path.Combine(Application.StartupPath, "Wallpapers");
+        using OpenFileDialog fileExplorer = new OpenFileDialog();
+        fileExplorer.Title = "Select Wallpaper(s) to delete";
+        fileExplorer.Filter = "Images (*.jpg;*.jpeg;*.png)";
     }
 }
