@@ -12,6 +12,7 @@ partial class Form1
     private System.Windows.Forms.Button darkModeButton;
     private System.Windows.Forms.Button changeWallpaperFolderButton;
     private System.Windows.Forms.Button loadDefaultSettingsButton;
+    private System.Windows.Forms.ComboBox languageComboBox;
     
     protected override void Dispose(bool disposing)
     {
@@ -21,6 +22,30 @@ partial class Form1
         }
 
         base.Dispose(disposing);
+    }
+    
+    private void ConfigureButtons(Button button, string name, string text, Point location, Size size, int textSize, EventHandler eventHandler)
+    {
+            button.Text = text;
+            button.Location = location;
+            button.Size = size;
+            button.FlatStyle = FlatStyle.Flat;
+            button.Font = new Font("Segoe UI Emoji", textSize);
+            button.TextAlign = ContentAlignment.MiddleCenter;
+            button.Click += eventHandler;
+            button.UseVisualStyleBackColor = true;
+            button.Name = name;
+    }
+
+    private void AddControls(Button? button, Button button2, Button button3, Button button4, ComboBox? comboBox, ListBox? listBox, PictureBox? pictureBox)
+    {
+        this.Controls.Add(button);
+        this.Controls.Add(button2);
+        this.Controls.Add(button3);
+        this.Controls.Add(button4);
+        this.Controls.Add(comboBox);
+        this.Controls.Add(listBox);
+        this.Controls.Add(pictureBox);
     }
 
     #region Windows Form Designer generated code
@@ -35,7 +60,9 @@ partial class Form1
         this.darkModeButton = new System.Windows.Forms.Button();
         this.changeWallpaperFolderButton = new System.Windows.Forms.Button();
         this.loadDefaultSettingsButton = new System.Windows.Forms.Button();
+        this.languageComboBox = new System.Windows.Forms.ComboBox();
         this.SuspendLayout();
+        
         
         //wallpaperDisplay
         this.wallpapersDisplay.Location = new System.Drawing.Point(300, 100);
@@ -53,69 +80,29 @@ partial class Form1
             new System.EventHandler(this.WallpapersListBoxSelectedIndexChanged);
         this.wallpapersListBox.FormattingEnabled = true;
         this.wallpapersListBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-        //this.wallpapersListBox.Dock = System.Windows.Forms.DockStyle.Right;
         
         //applyButton
-        this.applyButton.Location = new System.Drawing.Point(55, 100);
-        this.applyButton.Size = new System.Drawing.Size(210, 40);
-        this.applyButton.Name = "applyButton";
-        this.applyButton.Text = "\ud83c\udfaf Apply";
-        this.applyButton.Font = new Font("Segoe UI Emoji", 15);
-        this.applyButton.UseVisualStyleBackColor = true;
-        this.applyButton.TextAlign = ContentAlignment.MiddleCenter;
-        this.applyButton.Click += new System.EventHandler(this.ApplyButtonClick);
-        //this.applyButton.Dock = DockStyle.Top;
+        ConfigureButtons(applyButton, "applyButton", "\ud83c\udfaf Apply", new Point(55, 100), new Size(210, 40), 15, ApplyButtonClick);
         
         //addWallpaperButton
-        this.addWallPaperButton.Location = new System.Drawing.Point(55, 150);
-        this.addWallPaperButton.Size = new System.Drawing.Size(100, 40);
-        this.addWallPaperButton.Name = "addWallPaperButton";
-        this.addWallPaperButton.Text = "\ud83d\uddbc\ufe0f Upload";
-        this.addWallPaperButton.Font = new Font("Segoe UI Emoji", 12);
-        this.addWallPaperButton.UseVisualStyleBackColor = true;
-        this.addWallPaperButton.TextAlign = ContentAlignment.MiddleCenter;
-        this.addWallPaperButton.Click += new System.EventHandler(this.AddWallPaperButtonClick);
-        //this.addWallPaperButton.Dock = DockStyle.Left;
+        ConfigureButtons(addWallPaperButton, "addWallpaperButton", "\ud83d\uddbc\ufe0f Upload", new Point(55, 150), new Size(100, 40), 12, AddWallPaperButtonClick);
         
         //deleteWallPaperButton
-        this.deleteWallPaperButton.Location = new System.Drawing.Point(165, 150);
-        this.deleteWallPaperButton.Size = new System.Drawing.Size(100, 40);
-        this.deleteWallPaperButton.Name = "deleteWallPaperButton";
-        this.deleteWallPaperButton.Text = "\ud83d\uddd1\ufe0f Delete";
-        this.deleteWallPaperButton.Font = new Font("Segoe UI Emoji", 12);
-        this.deleteWallPaperButton.TextAlign = ContentAlignment.MiddleCenter;
-        this.deleteWallPaperButton.UseVisualStyleBackColor = true;
-        this.deleteWallPaperButton.Click += new System.EventHandler(this.DeleteWallPaperButtonClick);
-        //this.deleteWallPaperButton.Dock = DockStyle.Left;
+        ConfigureButtons(deleteWallPaperButton, "deleteWallpaperButton", "\ud83d\uddd1\ufe0f Delete",
+            new Point(165, 150), new Size(100, 40), 12, DeleteWallPaperButtonClick);
         
         //darkModeButton
-        this.darkModeButton.Location = new System.Drawing.Point(10, 10);
-        this.darkModeButton.Size = new System.Drawing.Size(40, 40);
-        this.darkModeButton.Name = "darkModeButton";
-        this.darkModeButton.Text = "\ud83c\udf19";
-        this.darkModeButton.Font = new Font("Segoe UI Emoji", 15);
-        darkModeButton.ImageAlign = ContentAlignment.MiddleCenter;
-        this.darkModeButton.UseVisualStyleBackColor = true;
-        this.darkModeButton.Click += (s, e) => _themeManager.ToggleTheme();
+        ConfigureButtons(darkModeButton, "darkModeButton", "\ud83c\udf19", new Point(10, 10), new Size(40, 40), 15, (s, e) => _themeManager.ToggleTheme());
         
         //changeWallpaperFoldeButton
-        this.changeWallpaperFolderButton.Location = new System.Drawing.Point(55, 10);
-        this.changeWallpaperFolderButton.Size = new System.Drawing.Size(40, 40);
-        this.changeWallpaperFolderButton.Name = "changeWallpaperFolderButton";
-        this.changeWallpaperFolderButton.Text = "\ud83d\udcc2";
-        this.changeWallpaperFolderButton.Font = new Font("Segoe UI Emoji", 15, FontStyle.Bold);
-        this.changeWallpaperFolderButton.UseVisualStyleBackColor = true;
-        this.changeWallpaperFolderButton.Click += new System.EventHandler(this.ChangeWallpaperFolderClick);
+        ConfigureButtons(changeWallpaperFolderButton, "changeWallpaperButton", "\ud83d\udcc2", new Point(55, 10), new Size(40, 40), 15, ChangeWallpaperFolderClick);
         
         //loadDefaultSettingsButton
-        this.loadDefaultSettingsButton.Location = new System.Drawing.Point(100, 10);
-        this.loadDefaultSettingsButton.Size = new System.Drawing.Size(40, 40);
-        this.loadDefaultSettingsButton.Name = "loadDefaultSettingsButton";
-        this.loadDefaultSettingsButton.Text = "\ud83d\udd04";
-        this.loadDefaultSettingsButton.Font = new Font("Segoe UI Emoji", 15);
-        this.loadDefaultSettingsButton.UseVisualStyleBackColor = true;
-        this.loadDefaultSettingsButton.Click += (sender, args) => _settingsManager.LoadSettings(); 
-
+        ConfigureButtons(loadDefaultSettingsButton, "loadDefaultSettingsButton", "\ud83d\udd04", new Point(100, 10), new Size(40, 40), 15, (s, e) => _settingsManager.LoadSettings());
+        
+        //languageComboBox
+        this.languageComboBox.DropDownStyle = ComboBoxStyle.DropDownList;
+        
         this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
         this.ClientSize = new System.Drawing.Size(1920/2, 1080/2);
         this.MinimumSize = new System.Drawing.Size(1920/2, 1080/2);
@@ -124,14 +111,8 @@ partial class Form1
         this.ResumeLayout(false);
         
         //Add to layout
-        this.Controls.Add(this.applyButton);
-        this.Controls.Add(this.deleteWallPaperButton);
-        this.Controls.Add(this.addWallPaperButton);
-        this.Controls.Add(this.wallpapersListBox);
-        this.Controls.Add(this.wallpapersDisplay);
-        this.Controls.Add(this.darkModeButton);
-        this.Controls.Add(changeWallpaperFolderButton);
-        this.Controls.Add(this.loadDefaultSettingsButton);
+        AddControls(applyButton, addWallPaperButton, deleteWallPaperButton, loadDefaultSettingsButton, languageComboBox, wallpapersListBox, wallpapersDisplay);
+        AddControls(darkModeButton, changeWallpaperFolderButton, null, null, null, null, null);
     }
     
     #endregion

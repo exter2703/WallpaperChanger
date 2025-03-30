@@ -9,7 +9,9 @@ public class SettingsManager
 
     public SettingsManager(string defaultWallpaperPath)
     {
-        _settingsPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "settings.txt");
+        string appData = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "WallpaperManager");
+        Directory.CreateDirectory(appData);
+        _settingsPath = Path.Combine(appData, "settings.txt");
         WallpapersPath = defaultWallpaperPath;
 
         LoadSettings();

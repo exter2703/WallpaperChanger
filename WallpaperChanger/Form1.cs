@@ -151,7 +151,6 @@ public partial class Form1 : Form
                 try
                 {
                     File.Delete(fullPath);
-                    MessageBox.Show("Wallpaper deleted!");
 
                     wallpapersDisplay.Image?.Dispose();
                     wallpapersDisplay.Image = null;
