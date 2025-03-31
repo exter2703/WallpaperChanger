@@ -6,6 +6,7 @@ public class SettingsManager
 
     public string Theme { get; set; } = "Light";
     public string WallpapersPath { get; set; }
+    public string Language { get; set; } = "PL";
 
     public SettingsManager(string defaultWallpaperPath)
     {
@@ -31,6 +32,12 @@ public class SettingsManager
                 Theme = theme;
             }
 
+            if (line.StartsWith("Language="))
+            {
+                string lang = line.Split("=")[1].Trim();
+                Language = lang;
+            }
+
             if (line.StartsWith("WallpapersPath="))
             {
                 string path = line.Split("=")[1].Trim();
@@ -44,7 +51,7 @@ public class SettingsManager
 
     public void SaveSettings()
     {
-        string settings = $"Theme={Theme}\nWallpapersPath={WallpapersPath}";
+        string settings = $"Theme={Theme}\nWallpapersPath={WallpapersPath}\nLanguage={Language}";
         File.WriteAllText(_settingsPath, settings);
     }
 }

@@ -12,6 +12,7 @@ public partial class Form1 : Form
 {
     private readonly SettingsManager _settingsManager;
     private ThemeManager _themeManager;
+    private LanguageManager _languageManager;
     
     [DllImport("user32.dll", SetLastError = true)]
     private static extern bool SystemParametersInfo(
@@ -29,10 +30,12 @@ public partial class Form1 : Form
         _settingsManager = new SettingsManager(Path.Combine(Application.StartupPath, "Wallpapers"));
         _themeManager = new ThemeManager(_settingsManager, this);
         _themeManager.ApplyTheme();
+        _languageManager = new LanguageManager(_settingsManager, this);
+        _languageManager.ApplyLanguage();
+        
         WallpaperDisplay();
     }
     
-
     private void WallpaperDisplay()
     {
         if (wallpapersListBox == null) return;
@@ -70,6 +73,16 @@ public partial class Form1 : Form
                 wallpapersDisplay.Image = new Bitmap(img);
             }
         }
+    }
+
+    public void ChangeLanguage(object sender, EventArgs e)
+    {
+        if (languageComboBox.SelectedItem?.ToString() == "ENG")
+            _languageManager.SetLanguage(LanguageManager.Language.ENG);
+        else
+            _languageManager.SetLanguage(LanguageManager.Language.PL);
+
+        _languageManager.ApplyLanguage();
     }
     private void ApplyButtonClick(object sender, EventArgs e)
     {
