@@ -43,7 +43,7 @@ public partial class Form1 : Form
         wallpapersListBox.BeginUpdate();
         wallpapersListBox.Items.Clear();
 
-        string wallpapersPath = Path.Combine(_settingsManager.WallpapersPath);
+        var wallpapersPath = Path.Combine(_settingsManager.WallpapersPath);
 
         if (!Directory.Exists(wallpapersPath)){
             wallpapersListBox.EndUpdate();
@@ -64,7 +64,7 @@ public partial class Form1 : Form
     {
         if (wallpapersListBox.SelectedItem is string selectedWallpaper)
         {
-            string fullPath = Path.Combine(_settingsManager.WallpapersPath, selectedWallpaper);
+            var fullPath = Path.Combine(_settingsManager.WallpapersPath, selectedWallpaper);
 
             if (File.Exists(fullPath))
             {
@@ -75,7 +75,7 @@ public partial class Form1 : Form
         }
     }
 
-    public void ChangeLanguage(object sender, EventArgs e)
+    private void ChangeLanguage(object sender, EventArgs e)
     {
         if (languageComboBox.SelectedItem?.ToString() == "ENG")
             _languageManager.SetLanguage(LanguageManager.Language.ENG);
@@ -84,61 +84,73 @@ public partial class Form1 : Form
 
         _languageManager.ApplyLanguage();
     }
+
+    private void LoadDefaultSettings()
+    {
+        _settingsManager.Theme = "Light";
+        _settingsManager.WallpapersPath = Path.Combine(Application.StartupPath, "Wallpapers");
+        _languageManager.SetLanguage(LanguageManager.Language.ENG);
+        _themeManager.ApplyTheme();
+        _languageManager.ApplyLanguage();
+        _settingsManager.SaveSettings();
+        WallpaperDisplay();
+    }
+    
     private void ApplyButtonClick(object sender, EventArgs e)
     {
         if (wallpapersListBox.SelectedItem is not string selectedWallpaper)
         {
-            MessageBox.Show("Please select a wallpaper.");
+            MessageBox.Show(_languageManager.GetText("SelectWallpaper"));
             return;
         }
          
-        string fullPath = Path.Combine(_settingsManager.WallpapersPath, selectedWallpaper);
+        var fullPath = Path.Combine(_settingsManager.WallpapersPath, selectedWallpaper);
 
         if (!File.Exists(fullPath))
         {
-            MessageBox.Show("File does not exist.");
+            MessageBox.Show("FileNotExists");
             return;
         }
 
-        bool result = SystemParametersInfo(
+        var result = SystemParametersInfo(
             SpiSetdeskwallpaper,
             0,
             fullPath,
             SpifUpdateinifile | SpifSendchange);
 
-        MessageBox.Show(result ? "Wallpaper changed." : "Wallpaper could not be updated.");
+        MessageBox.Show(result ? _languageManager.GetText("AppliedToast") : _languageManager.GetText("WallpaperNotUpdated"));
     }
 
     private void AddWallPaperButtonClick(object sender, EventArgs e)
     {
-        using OpenFileDialog fileExplorer = new OpenFileDialog();
-        fileExplorer.Title = "Select Wallpaper(s) to upload";
+        using var fileExplorer = new OpenFileDialog();
+        fileExplorer.Title = _languageManager.GetText("SelectWallpaperToAdd");
         fileExplorer.Filter = "Images (*.jpg;*.jpeg;*.png)|*.jpg;*.jpeg;*.png";
         fileExplorer.Multiselect = true;
 
         if (fileExplorer.ShowDialog() == DialogResult.OK)
         {
-            string fullPath = Path.Combine(_settingsManager.WallpapersPath);
+            var fullPath = Path.Combine(_settingsManager.WallpapersPath);
 
             if (!Directory.Exists(fullPath))
             {
                 Directory.CreateDirectory(fullPath);
             }
 
-            foreach (string selectedWallpaper in fileExplorer.FileNames)
+            foreach (var selectedWallpaper in fileExplorer.FileNames)
             {
-                string fileName = Path.GetFileName(selectedWallpaper);
-                string destinationPath = Path.Combine(fullPath, fileName);
+                var fileName = Path.GetFileName(selectedWallpaper);
+                var destinationPath = Path.Combine(fullPath, fileName);
 
                 if (!File.Exists(destinationPath))
                 {
                     File.Copy(selectedWallpaper, destinationPath);
                     WallpaperDisplay();
-                    MessageBox.Show("Wallpaper(s) added!");
+                    MessageBox.Show(_languageManager.GetText("AddedToast"));
                 }
                 else
                 {
-                    MessageBox.Show("Wallpaper(s) already added!");
+                    MessageBox.Show(_languageManager.GetText("WallpaperAlreadyAdded"));
                     WallpaperDisplay();
                 }
             }
@@ -149,14 +161,14 @@ public partial class Form1 : Form
     {
         if (wallpapersListBox.SelectedItem is not string selectedWallpaper)
         {
-            MessageBox.Show("Please select a Wallpaper!");
+            MessageBox.Show(_languageManager.GetText("SelectWallpaper"));
             return;
         }
-        string fullPath = Path.Combine(_settingsManager.WallpapersPath, selectedWallpaper);
+        var fullPath = Path.Combine(_settingsManager.WallpapersPath, selectedWallpaper);
 
         if (File.Exists(fullPath))
         {
-            var confirm = MessageBox.Show($"Czy na pewno chcesz usunąć {selectedWallpaper}'?", "Potwierdź akcję",
+            var confirm = MessageBox.Show(_languageManager.GetText("AreYouSureToDelete"), _languageManager.GetText("SubmitAction"),
                 MessageBoxButtons.YesNo, MessageBoxIcon.Question);
 
             if (confirm == DialogResult.Yes)
@@ -171,13 +183,13 @@ public partial class Form1 : Form
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show("Wystąpił błąd przy usuwaniu: " + ex.Message);
+                    MessageBox.Show(_languageManager.GetText("Error") + ex.Message);
                 }
             }
         }
         else
         {
-            MessageBox.Show("Wallapper not found!");
+            MessageBox.Show(_languageManager.GetText("WallpaperNotFound"));
         }
 
     }

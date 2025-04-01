@@ -8,7 +8,7 @@ partial class Form1
     internal System.Windows.Forms.Button addWallPaperButton;
     internal System.Windows.Forms.Button deleteWallPaperButton;
     private System.Windows.Forms.PictureBox wallpapersDisplay;
-    private System.Windows.Forms.ListBox wallpapersListBox;
+    internal System.Windows.Forms.ListBox wallpapersListBox;
     private System.Windows.Forms.Button darkModeButton;
     private System.Windows.Forms.Button changeWallpaperFolderButton;
     private System.Windows.Forms.Button resetSettingsButton;
@@ -85,7 +85,7 @@ partial class Form1
         
         //loadDefaultSettingsButton
         ConfigureButtons(resetSettingsButton, "resetSettingsButton", "\ud83d\udd04", 
-            new Point(100, 10), new Size(40, 40), 15, (s, e) => _settingsManager.LoadSettings());
+            new Point(100, 10), new Size(40, 40), 15, (s, e) => LoadDefaultSettings());
         #endregion
         
         #region Others
@@ -96,7 +96,6 @@ partial class Form1
         this.wallpapersDisplay.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
         this.wallpapersDisplay.Dock = System.Windows.Forms.DockStyle.Fill;
         this.wallpapersDisplay.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-
         //wallpaperListBox
         this.wallpapersListBox.Location = new System.Drawing.Point(55, 200);
         this.wallpapersListBox.Size = new System.Drawing.Size(210, 300);
@@ -109,7 +108,7 @@ partial class Form1
         this.languageComboBox.FormattingEnabled = true;
         this.languageComboBox.Location = new System.Drawing.Point(150, 10);
         this.languageComboBox.Name = "languageComboBox";
-        this.languageComboBox.Size = new System.Drawing.Size(50, 20);
+        this.languageComboBox.Size = new System.Drawing.Size(47, 20);
         this.languageComboBox.Items.AddRange(new object[]{"PL", "ENG"});
         this.languageComboBox.SelectedIndex = 1;
         this.languageComboBox.SelectedIndexChanged += new EventHandler(this.ChangeLanguage);
