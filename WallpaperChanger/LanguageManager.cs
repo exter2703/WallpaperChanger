@@ -60,6 +60,14 @@ public class LanguageManager
                 "FileNotExists" => "Plik nie istnieje!",
                 "AreYouSureToDelete" => $"Czy jesteś pewien, że chcesz usunąć {_form.wallpapersListBox.SelectedItem}?",
                 "SubmitAction" => "Potwierdź akcję",
+                
+                //ToolTip
+                "LoadDefaultSettingsToolTip" => "Załaduj domyślne ustawienia",
+                "ChangeLanguageToolTip" => "Zmień język",
+                "LightModeToolTip" => "Zmień tryb na ciemny",
+                "DarkModeToolTip" => "Zmień tryb na jasny",
+                "ChangeTheme" => "Zmień motyw",
+                "ChangeWallpaperFolder" => "Zmień folder przechowywania tapet",
                 _ => key
             },
             Language.ENG => key switch
@@ -84,10 +92,26 @@ public class LanguageManager
                 "FileNotExists" => "File not exists!",
                 "AreYouSureToDelete" => $"Are you sure to delete {_form.wallpapersListBox.SelectedItem}?",
                 "SubmitAction" => "Submit action",
+                
+                //Tooltip
+                "LoadDefaultSettingsToolTip" => "Load default settings",
+                "ChangeLanguageToolTip" => "Change language",
+                "LightModeToolTip" => "Change to Dark Mode",
+                "DarkModeToolTip" => "Change to Light Mode",
+                "ChangeTheme" => "Change theme",
+                "ChangeWallpaperFolder" => "Change wallpaper folder",
                 _ => key
             },
             _ => key
         };
+    }
+    
+    public void SetToolTips()
+    {
+        _form.toolTip.SetToolTip(_form.darkModeButton, GetText("ChangeTheme"));
+        _form.toolTip.SetToolTip(_form.resetSettingsButton, GetText("LoadDefaultSettingsToolTip"));
+        _form.toolTip.SetToolTip(_form.languageComboBox, GetText("ChangeLanguageToolTip"));
+        _form.toolTip.SetToolTip(_form.changeWallpaperFolderButton, GetText("ChangeWallpaperFolder"));
     }
 
     public void ApplyLanguage()
@@ -96,6 +120,7 @@ public class LanguageManager
         _form.addWallPaperButton.Text = GetText("Upload");
         _form.deleteWallPaperButton.Text = GetText("Delete");
         _form.languageComboBox.Text = _currentLanguage.ToString();
+        SetToolTips();
     }
     public Language GetCurrentLanguage() => _currentLanguage;
 }

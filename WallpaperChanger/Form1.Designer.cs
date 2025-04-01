@@ -9,10 +9,11 @@ partial class Form1
     internal System.Windows.Forms.Button deleteWallPaperButton;
     private System.Windows.Forms.PictureBox wallpapersDisplay;
     internal System.Windows.Forms.ListBox wallpapersListBox;
-    private System.Windows.Forms.Button darkModeButton;
-    private System.Windows.Forms.Button changeWallpaperFolderButton;
-    private System.Windows.Forms.Button resetSettingsButton;
+    internal System.Windows.Forms.Button darkModeButton;
+    internal System.Windows.Forms.Button changeWallpaperFolderButton;
+    internal System.Windows.Forms.Button resetSettingsButton;
     internal System.Windows.Forms.ComboBox languageComboBox;
+    internal System.Windows.Forms.ToolTip toolTip;
     
     protected override void Dispose(bool disposing)
     {
@@ -64,18 +65,19 @@ partial class Form1
         this.changeWallpaperFolderButton = new System.Windows.Forms.Button();
         this.resetSettingsButton = new System.Windows.Forms.Button();
         this.languageComboBox = new System.Windows.Forms.ComboBox();
+        this.toolTip = new ToolTip(this.components);
         #endregion
 
         #region Buttons
         //applyButton
-        ConfigureButtons(applyButton, "applyButton", "\ud83c\udfaf Apply", new Point(55, 100), new Size(210, 40), 15, ApplyButtonClick);
+        ConfigureButtons(applyButton, "applyButton", "\ud83c\udfaf Apply", new Point(55, 100), new Size(210, 40), 15, ApplyWallpaperButtonClick);
         
         //addWallpaperButton
-        ConfigureButtons(addWallPaperButton, "addWallpaperButton", "\ud83d\uddbc\ufe0f Upload", new Point(55, 150), new Size(100, 40), 12, AddWallPaperButtonClick);
+        ConfigureButtons(addWallPaperButton, "addWallpaperButton", "\ud83d\uddbc\ufe0f Upload", new Point(55, 150), new Size(100, 40), 12, AddWallpaperButtonClick);
         
         //deleteWallPaperButton
         ConfigureButtons(deleteWallPaperButton, "deleteWallpaperButton", "\ud83d\uddd1\ufe0f Delete",
-            new Point(165, 150), new Size(100, 40), 12, DeleteWallPaperButtonClick);
+            new Point(165, 150), new Size(100, 40), 12, DeleteWallpaperButtonClick);
         
         //darkModeButton
         ConfigureButtons(darkModeButton, "darkModeButton", "\ud83c\udf19", new Point(10, 10), new Size(40, 40), 15, (s, e) => _themeManager.ToggleTheme());
@@ -86,6 +88,10 @@ partial class Form1
         //loadDefaultSettingsButton
         ConfigureButtons(resetSettingsButton, "resetSettingsButton", "\ud83d\udd04", 
             new Point(100, 10), new Size(40, 40), 15, (s, e) => LoadDefaultSettings());
+        #endregion
+        
+        #region ButtonToolTips
+        
         #endregion
         
         #region Others
@@ -102,6 +108,7 @@ partial class Form1
         this.wallpapersListBox.SelectedIndexChanged += 
             new System.EventHandler(this.WallpapersListBoxSelectedIndexChanged);
         this.wallpapersListBox.FormattingEnabled = true;
+        this.wallpapersListBox.AllowDrop = true;
         this.wallpapersListBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
         //languageComboBox
         this.languageComboBox.DropDownStyle = ComboBoxStyle.DropDownList;
@@ -132,7 +139,7 @@ partial class Form1
             changeWallpaperFolderButton,
             languageComboBox, 
             wallpapersListBox, 
-            wallpapersDisplay 
+            wallpapersDisplay
             );
         #endregion
     }

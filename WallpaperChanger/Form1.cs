@@ -29,10 +29,9 @@ public partial class Form1 : Form
         
         _settingsManager = new SettingsManager(Path.Combine(Application.StartupPath, "Wallpapers"));
         _themeManager = new ThemeManager(_settingsManager, this);
-        _themeManager.ApplyTheme();
         _languageManager = new LanguageManager(_settingsManager, this);
+        _themeManager.ApplyTheme();
         _languageManager.ApplyLanguage();
-        
         WallpaperDisplay();
     }
     
@@ -81,7 +80,7 @@ public partial class Form1 : Form
             _languageManager.SetLanguage(LanguageManager.Language.ENG);
         else
             _languageManager.SetLanguage(LanguageManager.Language.PL);
-
+        
         _languageManager.ApplyLanguage();
     }
 
@@ -93,10 +92,11 @@ public partial class Form1 : Form
         _themeManager.ApplyTheme();
         _languageManager.ApplyLanguage();
         _settingsManager.SaveSettings();
+       
         WallpaperDisplay();
     }
     
-    private void ApplyButtonClick(object sender, EventArgs e)
+    private void ApplyWallpaperButtonClick(object sender, EventArgs e)
     {
         if (wallpapersListBox.SelectedItem is not string selectedWallpaper)
         {
@@ -121,13 +121,14 @@ public partial class Form1 : Form
         MessageBox.Show(result ? _languageManager.GetText("AppliedToast") : _languageManager.GetText("WallpaperNotUpdated"));
     }
 
-    private void AddWallPaperButtonClick(object sender, EventArgs e)
+    
+    private void AddWallpaperButtonClick(object sender, EventArgs e)
     {
         using var fileExplorer = new OpenFileDialog();
         fileExplorer.Title = _languageManager.GetText("SelectWallpaperToAdd");
         fileExplorer.Filter = "Images (*.jpg;*.jpeg;*.png)|*.jpg;*.jpeg;*.png";
         fileExplorer.Multiselect = true;
-
+        
         if (fileExplorer.ShowDialog() == DialogResult.OK)
         {
             var fullPath = Path.Combine(_settingsManager.WallpapersPath);
@@ -157,7 +158,8 @@ public partial class Form1 : Form
         }
     }
 
-    private void DeleteWallPaperButtonClick(object sender, EventArgs e)
+    
+    private void DeleteWallpaperButtonClick(object sender, EventArgs e)
     {
         if (wallpapersListBox.SelectedItem is not string selectedWallpaper)
         {
