@@ -1,3 +1,4 @@
+using System.Windows.Forms.VisualStyles;
 using Microsoft.VisualBasic.Devices;
 
 namespace WallpaperChanger;
@@ -13,6 +14,7 @@ public partial class Form1 : Form
     private readonly SettingsManager _settingsManager;
     private ThemeManager _themeManager;
     private LanguageManager _languageManager;
+    private UploadManager _uploadManager;
     
     [DllImport("user32.dll", SetLastError = true)]
     private static extern bool SystemParametersInfo(
@@ -30,6 +32,13 @@ public partial class Form1 : Form
         _settingsManager = new SettingsManager(Path.Combine(Application.StartupPath, "Wallpapers"));
         _themeManager = new ThemeManager(_settingsManager, this);
         _languageManager = new LanguageManager(_settingsManager, this);
+        _uploadManager = new UploadManager(_settingsManager.WallpapersPath, wallpapersListBox, _settingsManager, _themeManager);
+        
+        wallpapersListBox.AllowDrop = true;
+        wallpapersListBox.DragEnter += new DragEventHandler(_uploadManager.DragEnterWindow);
+        wallpapersListBox.DragDrop += new DragEventHandler(_uploadManager.DragAndDropWindow);
+        wallpapersListBox.DragLeave += new EventHandler(_uploadManager.DragLeaveWindow);
+        
         _themeManager.ApplyTheme();
         _languageManager.ApplyLanguage();
         WallpaperDisplay();
@@ -105,58 +114,77 @@ public partial class Form1 : Form
         }
          
         var fullPath = Path.Combine(_settingsManager.WallpapersPath, selectedWallpaper);
-
+    
         if (!File.Exists(fullPath))
         {
             MessageBox.Show("FileNotExists");
             return;
         }
-
+    
         var result = SystemParametersInfo(
             SpiSetdeskwallpaper,
             0,
             fullPath,
             SpifUpdateinifile | SpifSendchange);
-
+    
         MessageBox.Show(result ? _languageManager.GetText("AppliedToast") : _languageManager.GetText("WallpaperNotUpdated"));
     }
 
-    
-    private void AddWallpaperButtonClick(object sender, EventArgs e)
+    private void AddWallpaperClick(object sender, EventArgs e)
     {
-        using var fileExplorer = new OpenFileDialog();
-        fileExplorer.Title = _languageManager.GetText("SelectWallpaperToAdd");
-        fileExplorer.Filter = "Images (*.jpg;*.jpeg;*.png)|*.jpg;*.jpeg;*.png";
-        fileExplorer.Multiselect = true;
-        
-        if (fileExplorer.ShowDialog() == DialogResult.OK)
+        OpenFileDialog openFileDialog = new OpenFileDialog();
+        openFileDialog.Filter = "Obrazy (*.jpg; *.png; *.bmp) | *.jpg; *.png; *.bmp";
+
+        if (openFileDialog.ShowDialog() == DialogResult.OK)
         {
-            var fullPath = Path.Combine(_settingsManager.WallpapersPath);
-
-            if (!Directory.Exists(fullPath))
-            {
-                Directory.CreateDirectory(fullPath);
-            }
-
-            foreach (var selectedWallpaper in fileExplorer.FileNames)
-            {
-                var fileName = Path.GetFileName(selectedWallpaper);
-                var destinationPath = Path.Combine(fullPath, fileName);
-
-                if (!File.Exists(destinationPath))
-                {
-                    File.Copy(selectedWallpaper, destinationPath);
-                    WallpaperDisplay();
-                    MessageBox.Show(_languageManager.GetText("AddedToast"));
-                }
-                else
-                {
-                    MessageBox.Show(_languageManager.GetText("WallpaperAlreadyAdded"));
-                    WallpaperDisplay();
-                }
-            }
+            _uploadManager.UploadFromFile(openFileDialog.FileName);
         }
     }
+
+    public void DragAndDrop(object sender, DragEventArgs e)
+    {
+        if (e.Data.GetData(DataFormats.FileDrop) is string[] files)
+        {
+            _uploadManager.UploadMultiple(files);
+        }
+    }
+
+    
+    // private void AddWallpaperButtonClick(object sender, EventArgs e)
+    // {
+    //     using var fileExplorer = new OpenFileDialog();
+    //     fileExplorer.Title = _languageManager.GetText("SelectWallpaperToAdd");
+    //     fileExplorer.Filter = "Images (*.jpg;*.jpeg;*.png)|*.jpg;*.jpeg;*.png";
+    //     fileExplorer.Multiselect = true;
+    //     
+    //     if (fileExplorer.ShowDialog() == DialogResult.OK)
+    //     {
+    //         var fullPath = Path.Combine(_settingsManager.WallpapersPath);
+    //
+    //         if (!Directory.Exists(fullPath))
+    //         {
+    //             Directory.CreateDirectory(fullPath);
+    //         }
+    //
+    //         foreach (var selectedWallpaper in fileExplorer.FileNames)
+    //         {
+    //             var fileName = Path.GetFileName(selectedWallpaper);
+    //             var destinationPath = Path.Combine(fullPath, fileName);
+    //
+    //             if (!File.Exists(destinationPath))
+    //             {
+    //                 File.Copy(selectedWallpaper, destinationPath);
+    //                 WallpaperDisplay();
+    //                 MessageBox.Show(_languageManager.GetText("AddedToast"));
+    //             }
+    //             else
+    //             {
+    //                 MessageBox.Show(_languageManager.GetText("WallpaperAlreadyAdded"));
+    //                 WallpaperDisplay();
+    //             }
+    //         }
+    //     }
+    // }
 
     
     private void DeleteWallpaperButtonClick(object sender, EventArgs e)

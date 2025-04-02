@@ -73,7 +73,7 @@ partial class Form1
         ConfigureButtons(applyButton, "applyButton", "\ud83c\udfaf Apply", new Point(55, 100), new Size(210, 40), 15, ApplyWallpaperButtonClick);
         
         //addWallpaperButton
-        ConfigureButtons(addWallPaperButton, "addWallpaperButton", "\ud83d\uddbc\ufe0f Upload", new Point(55, 150), new Size(100, 40), 12, AddWallpaperButtonClick);
+        ConfigureButtons(addWallPaperButton, "addWallpaperButton", "\ud83d\uddbc\ufe0f Upload", new Point(55, 150), new Size(100, 40), 12, AddWallpaperClick);
         
         //deleteWallPaperButton
         ConfigureButtons(deleteWallPaperButton, "deleteWallpaperButton", "\ud83d\uddd1\ufe0f Delete",
@@ -110,6 +110,7 @@ partial class Form1
         this.wallpapersListBox.FormattingEnabled = true;
         this.wallpapersListBox.AllowDrop = true;
         this.wallpapersListBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+        //this.wallpapersListBox.DragDrop += new DragEventHandler(DragAndDrop);
         //languageComboBox
         this.languageComboBox.DropDownStyle = ComboBoxStyle.DropDownList;
         this.languageComboBox.FormattingEnabled = true;
