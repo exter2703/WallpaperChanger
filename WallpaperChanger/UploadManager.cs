@@ -4,15 +4,13 @@ public class UploadManager
 {
     private readonly string _targetFolder;
     private readonly ListBox _wallpapersListBox;
-    private readonly ThemeManager _themeManager;
     private readonly SettingsManager _settingsManager;
 
-    public UploadManager(string targetFolder, ListBox wallpapersListBox, SettingsManager settingsManager, ThemeManager themeManager)
+    public UploadManager(string targetFolder, SettingsManager settingsManager,  ListBox wallpapersListBox)
     {
         this._targetFolder = targetFolder;
         this._wallpapersListBox = wallpapersListBox;
         _settingsManager = settingsManager;
-        _themeManager = themeManager;
     }
 
     private bool IsImage(string path)
@@ -23,7 +21,7 @@ public class UploadManager
     
     public void UploadFromFile(string sourcePath)
     {
-
+        
         if (!IsImage(sourcePath)) return;
         
         string fileName = Path.GetFileName(sourcePath);

@@ -1,5 +1,5 @@
+using System.Diagnostics;
 using System.Windows.Forms.VisualStyles;
-using Microsoft.VisualBasic.Devices;
 
 namespace WallpaperChanger;
 
@@ -12,9 +12,10 @@ using System.Windows.Forms;
 public partial class Form1 : Form
 {
     private readonly SettingsManager _settingsManager;
-    private ThemeManager _themeManager;
-    private LanguageManager _languageManager;
-    private UploadManager _uploadManager;
+    private readonly ThemeManager _themeManager;
+    private readonly LanguageManager _languageManager;
+    private readonly UploadManager _uploadManager;
+    private readonly DeleteManager _deleteManager;
     
     [DllImport("user32.dll", SetLastError = true)]
     private static extern bool SystemParametersInfo(
@@ -32,12 +33,13 @@ public partial class Form1 : Form
         _settingsManager = new SettingsManager(Path.Combine(Application.StartupPath, "Wallpapers"));
         _themeManager = new ThemeManager(_settingsManager, this);
         _languageManager = new LanguageManager(_settingsManager, this);
-        _uploadManager = new UploadManager(_settingsManager.WallpapersPath, wallpapersListBox, _settingsManager, _themeManager);
+        _deleteManager = new DeleteManager(_settingsManager.WallpapersPath, _languageManager, _settingsManager, wallpapersListBox);
+        _uploadManager = new UploadManager(_settingsManager.WallpapersPath, _settingsManager, wallpapersListBox);
         
         wallpapersListBox.AllowDrop = true;
-        wallpapersListBox.DragEnter += new DragEventHandler(_uploadManager.DragEnterWindow);
-        wallpapersListBox.DragDrop += new DragEventHandler(_uploadManager.DragAndDropWindow);
-        wallpapersListBox.DragLeave += new EventHandler(_uploadManager.DragLeaveWindow);
+        wallpapersListBox.DragEnter += _uploadManager.DragEnterWindow;
+        wallpapersListBox.DragDrop += _uploadManager.DragAndDropWindow;
+        wallpapersListBox.DragLeave += _uploadManager.DragLeaveWindow;
         
         _themeManager.ApplyTheme();
         _languageManager.ApplyLanguage();
@@ -101,15 +103,31 @@ public partial class Form1 : Form
         _themeManager.ApplyTheme();
         _languageManager.ApplyLanguage();
         _settingsManager.SaveSettings();
-       
         WallpaperDisplay();
+    }
+
+    public void OpenWallpaperFolderClick(object sender, EventArgs e)
+    {
+        if (wallpapersListBox.SelectedItem is string selectedWallpaper)
+        {
+            string fullPath = Path.Combine(_settingsManager.WallpapersPath, selectedWallpaper);
+    
+            if (File.Exists(fullPath))
+                Process.Start("explorer.exe", $"/select,\"{fullPath}\"");
+            else
+                MessageBox.Show(_languageManager.GetText("FileNotExists"), _languageManager.GetText("Error"), MessageBoxButtons.OK, MessageBoxIcon.Error);
+        }
+        else
+        {
+            Process.Start("explorer.exe", _settingsManager.WallpapersPath);
+        }
     }
     
     private void ApplyWallpaperButtonClick(object sender, EventArgs e)
     {
         if (wallpapersListBox.SelectedItem is not string selectedWallpaper)
         {
-            MessageBox.Show(_languageManager.GetText("SelectWallpaper"));
+            MessageBox.Show(_languageManager.GetText("SelectWallpaper"), _languageManager.GetText("Error"), MessageBoxButtons.OK, MessageBoxIcon.Error);
             return;
         }
          
@@ -134,94 +152,20 @@ public partial class Form1 : Form
     {
         OpenFileDialog openFileDialog = new OpenFileDialog();
         openFileDialog.Filter = "Obrazy (*.jpg; *.png; *.bmp) | *.jpg; *.png; *.bmp";
-
+        openFileDialog.Multiselect = true;
+        
         if (openFileDialog.ShowDialog() == DialogResult.OK)
         {
-            _uploadManager.UploadFromFile(openFileDialog.FileName);
+            _uploadManager.UploadMultiple(openFileDialog.FileNames);
         }
     }
 
-    public void DragAndDrop(object sender, DragEventArgs e)
+    public void DeleteWallpaperClick(object sender, EventArgs e)
     {
-        if (e.Data.GetData(DataFormats.FileDrop) is string[] files)
-        {
-            _uploadManager.UploadMultiple(files);
-        }
-    }
-
-    
-    // private void AddWallpaperButtonClick(object sender, EventArgs e)
-    // {
-    //     using var fileExplorer = new OpenFileDialog();
-    //     fileExplorer.Title = _languageManager.GetText("SelectWallpaperToAdd");
-    //     fileExplorer.Filter = "Images (*.jpg;*.jpeg;*.png)|*.jpg;*.jpeg;*.png";
-    //     fileExplorer.Multiselect = true;
-    //     
-    //     if (fileExplorer.ShowDialog() == DialogResult.OK)
-    //     {
-    //         var fullPath = Path.Combine(_settingsManager.WallpapersPath);
-    //
-    //         if (!Directory.Exists(fullPath))
-    //         {
-    //             Directory.CreateDirectory(fullPath);
-    //         }
-    //
-    //         foreach (var selectedWallpaper in fileExplorer.FileNames)
-    //         {
-    //             var fileName = Path.GetFileName(selectedWallpaper);
-    //             var destinationPath = Path.Combine(fullPath, fileName);
-    //
-    //             if (!File.Exists(destinationPath))
-    //             {
-    //                 File.Copy(selectedWallpaper, destinationPath);
-    //                 WallpaperDisplay();
-    //                 MessageBox.Show(_languageManager.GetText("AddedToast"));
-    //             }
-    //             else
-    //             {
-    //                 MessageBox.Show(_languageManager.GetText("WallpaperAlreadyAdded"));
-    //                 WallpaperDisplay();
-    //             }
-    //         }
-    //     }
-    // }
-
-    
-    private void DeleteWallpaperButtonClick(object sender, EventArgs e)
-    {
-        if (wallpapersListBox.SelectedItem is not string selectedWallpaper)
-        {
-            MessageBox.Show(_languageManager.GetText("SelectWallpaper"));
-            return;
-        }
-        var fullPath = Path.Combine(_settingsManager.WallpapersPath, selectedWallpaper);
-
-        if (File.Exists(fullPath))
-        {
-            var confirm = MessageBox.Show(_languageManager.GetText("AreYouSureToDelete"), _languageManager.GetText("SubmitAction"),
-                MessageBoxButtons.YesNo, MessageBoxIcon.Question);
-
-            if (confirm == DialogResult.Yes)
-            {
-                try
-                {
-                    File.Delete(fullPath);
-
-                    wallpapersDisplay.Image?.Dispose();
-                    wallpapersDisplay.Image = null;
-                    WallpaperDisplay();
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show(_languageManager.GetText("Error") + ex.Message);
-                }
-            }
-        }
-        else
-        {
-            MessageBox.Show(_languageManager.GetText("WallpaperNotFound"));
-        }
-
+        _deleteManager.DeleteWallpaper();
+        wallpapersDisplay.Image?.Dispose();
+        wallpapersDisplay.Image = null;
+        WallpaperDisplay();
     }
 
     public void ChangeWallpaperFolderClick(object? sender, EventArgs? e)

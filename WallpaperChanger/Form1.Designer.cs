@@ -14,6 +14,7 @@ partial class Form1
     internal System.Windows.Forms.Button resetSettingsButton;
     internal System.Windows.Forms.ComboBox languageComboBox;
     internal System.Windows.Forms.ToolTip toolTip;
+    internal System.Windows.Forms.Button wallpapersFolderLocation;
     
     protected override void Dispose(bool disposing)
     {
@@ -66,6 +67,7 @@ partial class Form1
         this.resetSettingsButton = new System.Windows.Forms.Button();
         this.languageComboBox = new System.Windows.Forms.ComboBox();
         this.toolTip = new ToolTip(this.components);
+        this.wallpapersFolderLocation = new System.Windows.Forms.Button();
         #endregion
 
         #region Buttons
@@ -77,7 +79,7 @@ partial class Form1
         
         //deleteWallPaperButton
         ConfigureButtons(deleteWallPaperButton, "deleteWallpaperButton", "\ud83d\uddd1\ufe0f Delete",
-            new Point(165, 150), new Size(100, 40), 12, DeleteWallpaperButtonClick);
+            new Point(165, 150), new Size(100, 40), 12, DeleteWallpaperClick);
         
         //darkModeButton
         ConfigureButtons(darkModeButton, "darkModeButton", "\ud83c\udf19", new Point(10, 10), new Size(40, 40), 15, (s, e) => _themeManager.ToggleTheme());
@@ -88,6 +90,8 @@ partial class Form1
         //loadDefaultSettingsButton
         ConfigureButtons(resetSettingsButton, "resetSettingsButton", "\ud83d\udd04", 
             new Point(100, 10), new Size(40, 40), 15, (s, e) => LoadDefaultSettings());
+        
+        ConfigureButtons(wallpapersFolderLocation, "wallpapersFolderLocation", "Open wallpapers folder", new Point(55, 490), new Size (210, 27), 9, OpenWallpaperFolderClick);
         #endregion
         
         #region ButtonToolTips
@@ -110,7 +114,6 @@ partial class Form1
         this.wallpapersListBox.FormattingEnabled = true;
         this.wallpapersListBox.AllowDrop = true;
         this.wallpapersListBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-        //this.wallpapersListBox.DragDrop += new DragEventHandler(DragAndDrop);
         //languageComboBox
         this.languageComboBox.DropDownStyle = ComboBoxStyle.DropDownList;
         this.languageComboBox.FormattingEnabled = true;
@@ -140,7 +143,8 @@ partial class Form1
             changeWallpaperFolderButton,
             languageComboBox, 
             wallpapersListBox, 
-            wallpapersDisplay
+            wallpapersDisplay,
+            wallpapersFolderLocation
             );
         #endregion
     }

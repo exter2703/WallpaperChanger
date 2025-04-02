@@ -4,7 +4,6 @@ public class ThemeManager
 {
     private readonly SettingsManager _settingsManager;
     private readonly Form _form;
-    private LanguageManager _languageManager;
 
     public ThemeManager(SettingsManager settingsManager, Form form)
     {

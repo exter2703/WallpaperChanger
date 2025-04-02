@@ -44,13 +44,14 @@ public class LanguageManager
                 "Apply" => "\ud83c\udfaf Zastosuj",
                 "Upload" => "\ud83d\uddbc\ufe0f Dodaj",
                 "Delete" => "\ud83d\uddd1\ufe0f Usuń",
+                "OpenFileLocation" => "Otwórz lokalizację plików...",
                 
                 //Messeges
                 "AppliedToast" => "Tapeta ustawiona!",
                 "AddedToast" => "Tapety dodane!",
                 "DeletedToast" => "Tapeta usunięta.",
                 "ErrorToast" => "Wystąpił błąd.",
-                "SelectWallpaper" => "Proszę wybrać tapetę.",
+                "SelectWallpaper" => "Proszę wybrać tapete!",
                 "SelectWallpaperToAdd" => "Wybierz tapetę do dodania",
                 "WallpaperAlreadyAdded" => "Tapeta jest już dodana.",
                 "WallpaperNotUpdated" => "Tapeta nie może zostać zmieniona.",
@@ -60,6 +61,9 @@ public class LanguageManager
                 "FileNotExists" => "Plik nie istnieje!",
                 "AreYouSureToDelete" => $"Czy jesteś pewien, że chcesz usunąć {_form.wallpapersListBox.SelectedItem}?",
                 "SubmitAction" => "Potwierdź akcję",
+                "ChangeName" => "Zmień nazwę",
+                "ProvideName" => "Podaj nową nazwę:",
+                "Error" => "Błąd!",
                 
                 //ToolTip
                 "LoadDefaultSettingsToolTip" => "Załaduj domyślne ustawienia",
@@ -76,13 +80,14 @@ public class LanguageManager
                 "Apply" => "\ud83c\udfaf Apply",
                 "Upload" => "\ud83d\uddbc\ufe0f Upload",
                 "Delete" => "\ud83d\uddd1\ufe0f Delete",
+                "OpenFileLocation" => "Open files location...",
                 
                 //Messeges
                 "AppliedToast" => "Wallpaper changed!",
                 "AddedToast" => "Wallpaper(s) added!",
                 "DeletedToast" => "Wallpaper(s) deleted!",
                 "ErrorToast" => "Error.",
-                "SelectWallpaper" => "Select wallpaper.",
+                "SelectWallpaper" => "Please select a wallpaper!",
                 "SelectWallpaperToAdd" => "Please select wallpaper to add",
                 "WallpaperAlreadyAdded" => "Wallpaper already added!",
                 "WallpaperNotUpdated" => "Wallpaper cannot be updated.",
@@ -92,6 +97,9 @@ public class LanguageManager
                 "FileNotExists" => "File not exists!",
                 "AreYouSureToDelete" => $"Are you sure to delete {_form.wallpapersListBox.SelectedItem}?",
                 "SubmitAction" => "Submit action",
+                "ChangeName" => "Change name",
+                "ProvideName" => "Provide new name:",
+                "Error" => "Error!",
                 
                 //Tooltip
                 "LoadDefaultSettingsToolTip" => "Load default settings",
@@ -120,6 +128,7 @@ public class LanguageManager
         _form.addWallPaperButton.Text = GetText("Upload");
         _form.deleteWallPaperButton.Text = GetText("Delete");
         _form.languageComboBox.Text = _currentLanguage.ToString();
+        _form.wallpapersFolderLocation.Text = GetText("OpenFileLocation");
         SetToolTips();
     }
     public Language GetCurrentLanguage() => _currentLanguage;
