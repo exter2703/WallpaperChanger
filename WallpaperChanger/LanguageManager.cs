@@ -5,6 +5,7 @@ public class LanguageManager
     private readonly SettingsManager _settingsManager;
     private readonly Form1 _form;
     private Language _currentLanguage;
+    private readonly FavoritesManager _favoritesManager;
 
     public enum Language
     {
@@ -64,6 +65,12 @@ public class LanguageManager
                 "ChangeName" => "Zmień nazwę",
                 "ProvideName" => "Podaj nową nazwę:",
                 "Error" => "Błąd!",
+                "AddToFavorites" => "Dodaj do ulubionych",
+                "RemoveFromFavorites" => "Usuń z ulubionych",
+                "AddRemoveFavorites" => "Ulubione",
+                "All" => "Wszystkie",
+                "Favorites" => "Ulubione",
+                "AddedToday" => "Dodane dzisiaj",
                 
                 //ToolTip
                 "LoadDefaultSettingsToolTip" => "Załaduj domyślne ustawienia",
@@ -100,6 +107,12 @@ public class LanguageManager
                 "ChangeName" => "Change name",
                 "ProvideName" => "Provide new name:",
                 "Error" => "Error!",
+                "AddToFavorites" => "Add to favorites",
+                "RemoveFromFavorites" => "Remove from favorites",
+                "AddRemoveFavorites" => "Favorite",
+                "All" => "All",
+                "Favorites" => "Favorites",
+                "AddedToday" => "Added Today",
                 
                 //Tooltip
                 "LoadDefaultSettingsToolTip" => "Load default settings",
@@ -116,6 +129,7 @@ public class LanguageManager
     
     public void SetToolTips()
     {
+        _form.toolTip.SetToolTip(_form.addToFavoriteButton, GetText("AddRemoveFavorites"));
         _form.toolTip.SetToolTip(_form.darkModeButton, GetText("ChangeTheme"));
         _form.toolTip.SetToolTip(_form.resetSettingsButton, GetText("LoadDefaultSettingsToolTip"));
         _form.toolTip.SetToolTip(_form.languageComboBox, GetText("ChangeLanguageToolTip"));
@@ -129,6 +143,8 @@ public class LanguageManager
         _form.deleteWallPaperButton.Text = GetText("Delete");
         _form.languageComboBox.Text = _currentLanguage.ToString();
         _form.wallpapersFolderLocation.Text = GetText("OpenFileLocation");
+        _form.filtersCheckListBox.Items.Clear();
+        _form.filtersCheckListBox.Items.AddRange(GetText("Favorites"), ".PNG", ".JPG");
         SetToolTips();
     }
     public Language GetCurrentLanguage() => _currentLanguage;

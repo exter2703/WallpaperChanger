@@ -1,5 +1,4 @@
 using System.Diagnostics;
-using System.Windows.Forms.VisualStyles;
 
 namespace WallpaperChanger;
 
@@ -7,7 +6,6 @@ using System.IO;
 using System.Linq;
 using System.Drawing;
 using System.Runtime.InteropServices;
-using Microsoft.Win32;
 using System.Windows.Forms;
 public partial class Form1 : Form
 {
@@ -16,6 +14,7 @@ public partial class Form1 : Form
     private readonly LanguageManager _languageManager;
     private readonly UploadManager _uploadManager;
     private readonly DeleteManager _deleteManager;
+    private readonly FavoritesManager _favoritesManager;
     
     [DllImport("user32.dll", SetLastError = true)]
     private static extern bool SystemParametersInfo(
@@ -30,7 +29,8 @@ public partial class Form1 : Form
         InitializeComponent();
         CenterToScreen();
         
-        _settingsManager = new SettingsManager(Path.Combine(Application.StartupPath, "Wallpapers"));
+        _settingsManager = new SettingsManager();
+        _favoritesManager = new FavoritesManager();
         _themeManager = new ThemeManager(_settingsManager, this);
         _languageManager = new LanguageManager(_settingsManager, this);
         _deleteManager = new DeleteManager(_settingsManager.WallpapersPath, _languageManager, _settingsManager, wallpapersListBox);
@@ -61,12 +61,46 @@ public partial class Form1 : Form
         }
         
         var imageFiles = Directory.GetFiles(wallpapersPath, "*.*")
-            .Where(file => file.EndsWith(".jpg") || file.EndsWith(".jpeg") || file.EndsWith(".png"));
+            .Where(file =>
+                file.EndsWith(".jpg", StringComparison.OrdinalIgnoreCase) ||
+                file.EndsWith(".jpeg", StringComparison.OrdinalIgnoreCase) ||
+                file.EndsWith(".png", StringComparison.OrdinalIgnoreCase));
+        
+        bool showOnlyFavorites = filtersCheckListBox?.CheckedItems
+            .Cast<string>()
+            .Any(item => item == _languageManager.GetText("Favorites")) ?? false;
 
+        bool showOnlyJpg = filtersCheckListBox?.CheckedItems
+            .Cast<string>()
+            .Any(item => item == ".JPG") == true;
+        
+        bool showOnlyPng = filtersCheckListBox?.CheckedItems
+            .Cast<string>()
+            .Any(item => item == ".PNG") == true;
+        
+        
+        if (showOnlyFavorites)
+        {
+            imageFiles = _favoritesManager.FilterFavorites(imageFiles);
+            wallpapersListBox.Refresh();
+        }
+        
         foreach (var file in imageFiles)
         {
+            string extension = Path.GetExtension(file).ToLower();
+
+            bool isJpg = extension == ".jpg" || extension == ".jpeg";
+            bool isPng = extension == ".png";
+            
+            if ((showOnlyJpg && !isJpg) || (showOnlyPng && !isPng))
+            {
+                if (showOnlyJpg || showOnlyPng)
+                    continue;
+            }
+
             wallpapersListBox.Items.Add(Path.GetFileName(file));
         }
+
         wallpapersListBox.EndUpdate();
     }
 
@@ -83,6 +117,11 @@ public partial class Form1 : Form
                 wallpapersDisplay.Image = new Bitmap(img);
             }
         }
+
+        if (wallpapersListBox.SelectedItem is string selected)
+        {
+            addToFavoriteButton.Text = _favoritesManager.IsFavorite(selected) ? "\u2b50" : "\u2606";
+        }
     }
 
     private void ChangeLanguage(object sender, EventArgs e)
@@ -97,8 +136,10 @@ public partial class Form1 : Form
 
     private void LoadDefaultSettings()
     {
+        string appData = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "WallpaperManager");
+        string wallpaperFolder = Path.Combine(appData, "Wallpapers");
         _settingsManager.Theme = "Light";
-        _settingsManager.WallpapersPath = Path.Combine(Application.StartupPath, "Wallpapers");
+        _settingsManager.WallpapersPath = wallpaperFolder;
         _languageManager.SetLanguage(LanguageManager.Language.ENG);
         _themeManager.ApplyTheme();
         _languageManager.ApplyLanguage();
@@ -121,6 +162,11 @@ public partial class Form1 : Form
         {
             Process.Start("explorer.exe", _settingsManager.WallpapersPath);
         }
+    }
+    
+    private void FilterListCheck(object? sender, ItemCheckEventArgs e)
+    {
+        BeginInvoke((Action)(WallpaperDisplay));
     }
     
     private void ApplyWallpaperButtonClick(object sender, EventArgs e)
@@ -182,5 +228,25 @@ public partial class Form1 : Form
             }
         }
         _settingsManager.SaveSettings();
+    }
+
+    public void AddRemoveFavoritesClick(object? sender, EventArgs? e)
+    {
+        if (wallpapersListBox.SelectedItem is not string selectedWallpaper)
+        {
+            MessageBox.Show(_languageManager.GetText("SelectWallpaper"), _languageManager.GetText("Error"), MessageBoxButtons.OK, MessageBoxIcon.Error);
+            return;
+        }
+
+        if (_favoritesManager.IsFavorite(selectedWallpaper))
+        {
+            _favoritesManager.Remove(selectedWallpaper);
+            addToFavoriteButton.Text = "\u2606";
+        }
+        else
+        {
+            _favoritesManager.Add(selectedWallpaper);
+            addToFavoriteButton.Text = "\u2b50";
+        }
     }
 }

@@ -15,6 +15,11 @@ partial class Form1
     internal System.Windows.Forms.ComboBox languageComboBox;
     internal System.Windows.Forms.ToolTip toolTip;
     internal System.Windows.Forms.Button wallpapersFolderLocation;
+    internal System.Windows.Forms.Button addToFavoriteButton;
+    internal System.Windows.Forms.CheckedListBox filtersCheckListBox;
+    internal System.Windows.Forms.PictureBox desktopIconComputer;
+    internal System.Windows.Forms.PictureBox desktopIconTrash;
+    internal System.Windows.Forms.PictureBox desktopIconFolder;
     
     protected override void Dispose(bool disposing)
     {
@@ -68,18 +73,23 @@ partial class Form1
         this.languageComboBox = new System.Windows.Forms.ComboBox();
         this.toolTip = new ToolTip(this.components);
         this.wallpapersFolderLocation = new System.Windows.Forms.Button();
+        this.addToFavoriteButton = new System.Windows.Forms.Button();
+        this.filtersCheckListBox = new System.Windows.Forms.CheckedListBox();
+        this.desktopIconComputer = new System.Windows.Forms.PictureBox();
+        this.desktopIconTrash = new System.Windows.Forms.PictureBox();
+        this.desktopIconFolder = new System.Windows.Forms.PictureBox();
         #endregion
 
         #region Buttons
         //applyButton
-        ConfigureButtons(applyButton, "applyButton", "\ud83c\udfaf Apply", new Point(55, 100), new Size(210, 40), 15, ApplyWallpaperButtonClick);
+        ConfigureButtons(applyButton, "applyButton", "\ud83c\udfaf Apply", new Point(55, 100), new Size(377, 40), 15, ApplyWallpaperButtonClick);
         
-        //addWallpaperButton
-        ConfigureButtons(addWallPaperButton, "addWallpaperButton", "\ud83d\uddbc\ufe0f Upload", new Point(55, 150), new Size(100, 40), 12, AddWallpaperClick);
+        //uploadWallpaperButton
+        ConfigureButtons(addWallPaperButton, "addWallpaperButton", "\ud83d\uddbc\ufe0f Upload", new Point(283, 150), new Size(150, 40), 12, AddWallpaperClick);
         
         //deleteWallPaperButton
         ConfigureButtons(deleteWallPaperButton, "deleteWallpaperButton", "\ud83d\uddd1\ufe0f Delete",
-            new Point(165, 150), new Size(100, 40), 12, DeleteWallpaperClick);
+            new Point(283, 200), new Size(150, 40), 12, DeleteWallpaperClick);
         
         //darkModeButton
         ConfigureButtons(darkModeButton, "darkModeButton", "\ud83c\udf19", new Point(10, 10), new Size(40, 40), 15, (s, e) => _themeManager.ToggleTheme());
@@ -90,25 +100,24 @@ partial class Form1
         //loadDefaultSettingsButton
         ConfigureButtons(resetSettingsButton, "resetSettingsButton", "\ud83d\udd04", 
             new Point(100, 10), new Size(40, 40), 15, (s, e) => LoadDefaultSettings());
-        
-        ConfigureButtons(wallpapersFolderLocation, "wallpapersFolderLocation", "Open wallpapers folder", new Point(55, 490), new Size (210, 27), 9, OpenWallpaperFolderClick);
-        #endregion
-        
-        #region ButtonToolTips
-        
+        //wallpapersFolderLocation
+        ConfigureButtons(wallpapersFolderLocation, "wallpapersFolderLocation", "Open wallpapers folder", new Point(56, 476), new Size (210, 27), 9, OpenWallpaperFolderClick);
+        //addTofavoriteButton
+        ConfigureButtons(addToFavoriteButton, "addToFavoriteButton", "\u2b50", new Point(22, 150), new Size(28, 28), 10, AddRemoveFavoritesClick);
         #endregion
         
         #region Others
         //wallpaperDisplay
-        this.wallpapersDisplay.Location = new System.Drawing.Point(300, 100);
-        this.wallpapersDisplay.Size = new System.Drawing.Size(1920/3, 1080/3);
-        this.wallpapersDisplay.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+        this.wallpapersDisplay.Location = new System.Drawing.Point(450, 100);
+        this.wallpapersDisplay.Size = new System.Drawing.Size(708, 400);
+        this.wallpapersDisplay.MinimumSize = new System.Drawing.Size(708, 400);
+        this.wallpapersDisplay.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
         this.wallpapersDisplay.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
         this.wallpapersDisplay.Dock = System.Windows.Forms.DockStyle.Fill;
         this.wallpapersDisplay.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
         //wallpaperListBox
-        this.wallpapersListBox.Location = new System.Drawing.Point(55, 200);
-        this.wallpapersListBox.Size = new System.Drawing.Size(210, 300);
+        this.wallpapersListBox.Location = new System.Drawing.Point(56, 150);
+        this.wallpapersListBox.Size = new System.Drawing.Size(210, 320);
         this.wallpapersListBox.SelectedIndexChanged += 
             new System.EventHandler(this.WallpapersListBoxSelectedIndexChanged);
         this.wallpapersListBox.FormattingEnabled = true;
@@ -123,12 +132,19 @@ partial class Form1
         this.languageComboBox.Items.AddRange(new object[]{"PL", "ENG"});
         this.languageComboBox.SelectedIndex = 1;
         this.languageComboBox.SelectedIndexChanged += new EventHandler(this.ChangeLanguage);
+        //filtersCheckBox
+        this.filtersCheckListBox.CheckOnClick = true;
+        this.filtersCheckListBox.FormattingEnabled = true;
+        this.filtersCheckListBox.Location = new System.Drawing.Point(281, 250);
+        this.filtersCheckListBox.Name = "filtersCheckListBox";
+        this.filtersCheckListBox.Size = new System.Drawing.Size(150, 220);
+        this.filtersCheckListBox.ItemCheck += new System.Windows.Forms.ItemCheckEventHandler(this.FilterListCheck);
         #endregion
         
         #region WindowProperties
         this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-        this.ClientSize = new System.Drawing.Size(1920/2, 1080/2);
-        this.MinimumSize = new System.Drawing.Size(1920/2, 1080/2);
+        this.ClientSize = new System.Drawing.Size(1203, 610);
+        this.MinimumSize = new System.Drawing.Size(1205, 610);
         this.Name = "Form1";
         this.Text = "Wallpaper Manager";
         this.ResumeLayout(false);
@@ -144,7 +160,9 @@ partial class Form1
             languageComboBox, 
             wallpapersListBox, 
             wallpapersDisplay,
-            wallpapersFolderLocation
+            wallpapersFolderLocation,
+            addToFavoriteButton, 
+            filtersCheckListBox
             );
         #endregion
     }

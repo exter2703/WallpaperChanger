@@ -8,12 +8,16 @@ public class SettingsManager
     public string WallpapersPath { get; set; }
     public string Language { get; set; } = "PL";
 
-    public SettingsManager(string defaultWallpaperPath)
+    public SettingsManager()
     {
         string appData = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "WallpaperManager");
         Directory.CreateDirectory(appData);
+        string wallpaperFolder = Path.Combine(appData, "Wallpapers");
+        Directory.CreateDirectory(wallpaperFolder);
+        Console.WriteLine("Wallpaper Manager:" + appData);
+        Console.WriteLine("Folder tapet: " + wallpaperFolder);
         _settingsPath = Path.Combine(appData, "settings.txt");
-        WallpapersPath = defaultWallpaperPath;
+        WallpapersPath = wallpaperFolder;
 
         LoadSettings();
     }
