@@ -1,7 +1,7 @@
 ## WallpaperChanger
 
 A simple and lightweight Windows Forms app for managing desktop wallpapers.  
-You can add your own images, mark favorites, filter, and even download random wallpapers from Unsplash.
+You can add your own images, mark favorites and filter wallpapers.
 
 ## Features
 
