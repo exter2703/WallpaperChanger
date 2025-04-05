@@ -13,10 +13,6 @@ You can add your own images, mark favorites and filter wallpapers.
 - Custom wallpaper folder
 - Settings saved to disk
 
-## License
-
-This project is licensed under the [CC BY-NC-ND 4.0](https://creativecommons.org/licenses/by-nc-nd/4.0/) license.
-
 You are free to:
 - Use this application for personal and non-commercial purposes
 - Share it as-is, with proper credit
