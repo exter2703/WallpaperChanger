@@ -25,5 +25,3 @@ You are free to:
 You are **not allowed to**:
 - Sell it or use it commercially
 - Re-upload or redistribute a modified version
-
-© 2025 by [exter2703] — All rights reserved.
